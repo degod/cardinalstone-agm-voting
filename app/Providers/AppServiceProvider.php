@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Enums\Roles;
+use App\Repositories\Company\CompanyRepository;
+use App\Repositories\Company\CompanyRepositoryInterface;
 use App\Repositories\User\UserRepository;
 use App\Repositories\User\UserRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
@@ -17,6 +19,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
+        $this->app->bind(CompanyRepositoryInterface::class, CompanyRepository::class);
     }
 
     /**

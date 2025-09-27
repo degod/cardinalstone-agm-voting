@@ -17,6 +17,11 @@
                 <li><a href="{{ route('users.index') }}" class="nav-link">Users</a></li>
             </ul>
         </li>
+        <li>
+            <a href="{{ route('companies.index') }}" class="nav-link text-white d-flex align-items-center">
+                <span class="me-2 bi bi-building"></span> Company
+            </a>
+        </li>
         @endadmin
         <!-- <li>
             <a href="#billsMenu" data-bs-toggle="collapse" class="nav-link text-white d-flex align-items-center">

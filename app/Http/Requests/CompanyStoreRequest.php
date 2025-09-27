@@ -2,10 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\Roles;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UserEditRequest extends FormRequest
+class CompanyStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,10 +22,8 @@ class UserEditRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . $this->route('id'),
-            'role' => 'required|string|in:' . Roles::ADMIN . ',' . Roles::SHAREHOLDER,
-            'is_active' => 'nullable|numeric',
+            'name' => 'required',
+            'registration_number' => 'required',
         ];
     }
 }
