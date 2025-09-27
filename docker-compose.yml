@@ -1,0 +1,70 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cardinalstone-agm-voting-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - cardinalstone-agm-voting-network
+
+  nginx:
+    image: nginx:latest
+    container_name: cardinalstone-agm-voting-nginx
+    restart: unless-stopped
+    ports:
+      - "9190:80"
+    volumes:
+      - ./:/var/www/html
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    networks:
+      - cardinalstone-agm-voting-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: cardinalstone-agm-voting-mysql
+    restart: unless-stopped
+    ports:
+      - "3319:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: cardinalstone_agm_voting
+      MYSQL_USER: cardinalstone_user
+      MYSQL_PASSWORD: cardinalstone_pass
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - cardinalstone-agm-voting-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: cardinalstone-agm-voting-phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "9191:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: cardinalstone_user
+      PMA_PASSWORD: cardinalstone_pass
+      UPLOAD_LIMIT: 100M
+    networks:
+      - cardinalstone-agm-voting-network
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: cardinalstone-agm-voting-mailhog
+    restart: unless-stopped
+    ports:
+      - "8025:8025"
+    networks:
+      - cardinalstone-agm-voting-network
+
+networks:
+  cardinalstone-agm-voting-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
