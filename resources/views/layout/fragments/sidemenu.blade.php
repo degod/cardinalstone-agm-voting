@@ -7,7 +7,7 @@
                 <span class="me-2 bi bi-speedometer2"></span> Dashboard
             </a>
         </li>
-
+        @admin
         <li>
             <a href="#userMenu" data-bs-toggle="collapse" class="nav-link text-white d-flex align-items-center">
                 <span class="me-2 bi bi-people"></span>User Management
@@ -17,7 +17,7 @@
                 <li><a href="{{ route('users.index') }}" class="nav-link">Users</a></li>
             </ul>
         </li>
-
+        @endadmin
         <!-- <li>
             <a href="#billsMenu" data-bs-toggle="collapse" class="nav-link text-white d-flex align-items-center">
                 <span class="me-2 bi bi-people"></span>Bills Management

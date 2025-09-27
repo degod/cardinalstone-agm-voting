@@ -2,8 +2,8 @@
 
 namespace App\Enums;
 
-enum Roles: string
+class Roles
 {
-    case ADMIN = 'admin';
-    case SHAREHOLDER = 'shareholder';
+    const ADMIN = 'admin';
+    const SHAREHOLDER = 'shareholder';
 }
