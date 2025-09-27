@@ -26,6 +26,14 @@
                     @endforeach
                 </select>
             </div>
+            <div class="mb-3">
+                <label for="status" class="form-label">Status</label>
+                <select class="form-select" id="status" name="is_active" required>
+                    @foreach($statuses as $status => $statusName)
+                    <option value="{{ $status }}" {{ (old('is_active', $user->is_active) == $status) ? 'selected' : '' }}>{{ $statusName }}</option>
+                    @endforeach
+                </select>
+            </div>
             <button type="submit" class="btn btn-primary">Update User</button>
         </form>
     </div>

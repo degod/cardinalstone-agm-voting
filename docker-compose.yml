@@ -42,6 +42,7 @@ services:
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
     container_name: cardinalstone-agm-voting-phpmyadmin
+    platform: linux/amd64
     restart: unless-stopped
     ports:
       - "9191:80"
@@ -56,6 +57,7 @@ services:
   mailhog:
     image: mailhog/mailhog
     container_name: cardinalstone-agm-voting-mailhog
+    platform: linux/amd64
     restart: unless-stopped
     ports:
       - "8025:8025"

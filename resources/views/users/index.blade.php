@@ -50,6 +50,7 @@
                 <th>Name</th>
                 <th>Email</th>
                 <th>Role</th>
+                <th>Status</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -60,6 +61,7 @@
                 <td>{{ $user->name }}</td>
                 <td>{{ $user->email }}</td>
                 <td>{{ $user->role }}</td>
+                <td>{{ $statuses[$user->is_active] }}</td>
                 <td>
                     <a href="{{ route('users.edit', $user->id) }}" class="btn btn-primary btn-sm">Edit</a>
 

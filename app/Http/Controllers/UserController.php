@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\Roles;
+use App\Enums\UserStatuses;
 use App\Http\Requests\UserEditRequest;
 use App\Http\Requests\UserStoreRequest;
 use App\Repositories\User\UserRepositoryInterface;
@@ -18,13 +19,15 @@ class UserController extends Controller
         $users = $this->userRepository->all(config('pagination.default.per_page'));
         $roles = array_values((new \ReflectionClass(Roles::class))->getConstants());
         $roles = array_combine($roles, array_map(fn($role) => ucfirst(str_replace('-', ' ', $role)), $roles));
+        $statuses = UserStatuses::asKeyValue();
 
-        return view('users.index', compact('users', 'roles'));
+        return view('users.index', compact('users', 'roles', 'statuses'));
     }
 
     public function store(UserStoreRequest $request)
     {
         $data = $request->validated();
+        $data['is_active'] = UserStatuses::ACTIVE;
         $data['password'] = Hash::make('password');
 
         try {
@@ -42,8 +45,9 @@ class UserController extends Controller
         $user = $this->userRepository->findById($id);
         $roles = array_values((new \ReflectionClass(Roles::class))->getConstants());
         $roles = array_combine($roles, array_map(fn($role) => ucfirst(str_replace('-', ' ', $role)), $roles));
+        $statuses = UserStatuses::asKeyValue();
 
-        return view('users.edit', compact('user', 'roles'));
+        return view('users.edit', compact('user', 'roles', 'statuses'));
     }
 
     public function update(UserEditRequest $request, int $id)

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\Roles;
+use App\Enums\UserStatuses;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UserEditRequest extends FormRequest
@@ -26,6 +27,7 @@ class UserEditRequest extends FormRequest
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $this->route('id'),
             'role' => 'required|string|in:' . Roles::ADMIN . ',' . Roles::SHAREHOLDER,
+            'is_active' => 'nullable|numeric',
         ];
     }
 }
