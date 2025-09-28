@@ -18,20 +18,17 @@
             </ul>
         </li>
         <li>
-            <a href="{{ route('companies.index') }}" class="nav-link text-white d-flex align-items-center">
-                <span class="me-2 bi bi-building"></span> Company
-            </a>
-        </li>
-        @endadmin
-        <!-- <li>
-            <a href="#billsMenu" data-bs-toggle="collapse" class="nav-link text-white d-flex align-items-center">
-                <span class="me-2 bi bi-people"></span>Bills Management
+            <a href="#companyMenu" data-bs-toggle="collapse" class="nav-link text-white d-flex align-items-center">
+                <span class="me-2 bi bi-building"></span> Company Management
                 <span class="ms-auto bi bi-caret-down-fill"></span>
             </a>
-            <ul class="collapse list-unstyled ps-3" id="billsMenu">
-                <li><a href="{{ route('login') }}" class="nav-link">Categories</a></li>
+            <ul class="collapse list-unstyled ps-3" id="companyMenu">
+                <li><a href="{{ route('companies.index') }}" class="nav-link">Company</a></li>
+                <li><a href="{{ route('shareholders.index') }}" class="nav-link">Shareholders</a></li>
+                <li><a href="{{ route('agms.index') }}" class="nav-link">AGM</a></li>
             </ul>
-        </li> -->
+        </li>
+        @endadmin
     </ul>
 </nav>
 <!-- End Sidebar -->

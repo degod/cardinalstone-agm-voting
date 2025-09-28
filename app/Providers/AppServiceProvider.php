@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Enums\Roles;
+use App\Repositories\Agm\AgmRepository;
+use App\Repositories\Agm\AgmRepositoryInterface;
 use App\Repositories\Company\CompanyRepository;
 use App\Repositories\Company\CompanyRepositoryInterface;
 use App\Repositories\User\UserRepository;
@@ -20,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
         $this->app->bind(CompanyRepositoryInterface::class, CompanyRepository::class);
+        $this->app->bind(AgmRepositoryInterface::class, AgmRepository::class);
     }
 
     /**
