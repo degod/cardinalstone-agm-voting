@@ -25,7 +25,16 @@
             <ul class="collapse list-unstyled ps-3" id="companyMenu">
                 <li><a href="{{ route('companies.index') }}" class="nav-link">Company</a></li>
                 <li><a href="{{ route('shareholders.index') }}" class="nav-link">Shareholders</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#meetingMenu" data-bs-toggle="collapse" class="nav-link text-white d-flex align-items-center">
+                <span class="me-2 bi bi-people-fill"></span> Meeting Mgmt.
+                <span class="ms-auto bi bi-caret-down-fill"></span>
+            </a>
+            <ul class="collapse list-unstyled ps-3" id="meetingMenu">
                 <li><a href="{{ route('agms.index') }}" class="nav-link">AGM</a></li>
+                <li><a href="{{ route('agendas.index') }}" class="nav-link">Agenda</a></li>
             </ul>
         </li>
         @endadmin

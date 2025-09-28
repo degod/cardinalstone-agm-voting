@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Enums\Roles;
+use App\Repositories\Agenda\AgendaRepository;
+use App\Repositories\Agenda\AgendaRepositoryInterface;
 use App\Repositories\Agm\AgmRepository;
 use App\Repositories\Agm\AgmRepositoryInterface;
 use App\Repositories\Company\CompanyRepository;
@@ -26,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(CompanyRepositoryInterface::class, CompanyRepository::class);
         $this->app->bind(AgmRepositoryInterface::class, AgmRepository::class);
         $this->app->bind(ShareholderRepositoryInterface::class, ShareholderRepository::class);
+        $this->app->bind(AgendaRepositoryInterface::class, AgendaRepository::class);
     }
 
     /**

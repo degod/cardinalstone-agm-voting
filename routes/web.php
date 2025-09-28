@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\AgmController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CompanyController;
@@ -41,5 +42,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/shareholders/{id}/edit', [ShareholderController::class, 'edit'])->name('shareholders.edit');
         Route::put('/shareholders/{id}', [ShareholderController::class, 'update'])->name('shareholders.update');
         Route::delete('/shareholders/{id}', [ShareholderController::class, 'destroy'])->name('shareholders.destroy');
+
+        Route::get('/agendas', [AgendaController::class, 'index'])->name('agendas.index');
+        Route::post('/agendas', [AgendaController::class, 'store'])->name('agendas.store');
+        Route::get('/agendas/{id}/edit', [AgendaController::class, 'edit'])->name('agendas.edit');
+        Route::put('/agendas/{id}', [AgendaController::class, 'update'])->name('agendas.update');
+        Route::delete('/agendas/{id}', [AgendaController::class, 'destroy'])->name('agendas.destroy');
     });
 });
