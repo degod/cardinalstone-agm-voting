@@ -11,15 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('agms', function (Blueprint $table) {
+        Schema::create('shareholders', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('company_id');
-            $table->string('title', 255);
-            $table->text('description')->nullable();
-            $table->timestamp('meeting_date');
-            $table->timestamp('voting_start_time');
-            $table->timestamp('voting_end_time');
-            $table->enum('status', ['draft', 'active', 'closed', 'cancelled'])->default('draft');
+            $table->bigInteger('shares_owned')->unsigned();
+            $table->string('share_certificate_number')->nullable();
+            $table->date('acquired_date')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
 
             $table->foreign('company_id')
@@ -27,8 +26,13 @@ return new class extends Migration
                 ->on('companies')
                 ->onDelete('cascade');
 
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
+
             // Composite unique key
-            $table->unique(['company_id', 'title'], 'unique_title_per_company');
+            $table->unique(['company_id', 'user_id'], 'unique_user_per_company');
         });
     }
 
@@ -37,6 +41,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('agms');
+        Schema::dropIfExists('shareholders');
     }
 };

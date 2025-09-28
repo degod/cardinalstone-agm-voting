@@ -3,7 +3,7 @@
 
 @section('body_content')
 <h3>AGM Edit</h3>
-<p>Updating {{ $agm->name }} Details</p>
+<p>Updating {{ $agm->title }} Details</p>
 
 <div class="row">
     <div class="col-md-6">

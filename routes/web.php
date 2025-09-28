@@ -4,6 +4,7 @@ use App\Http\Controllers\AgmController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ShareholderController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -34,5 +35,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/agms/{id}/edit', [AgmController::class, 'edit'])->name('agms.edit');
         Route::put('/agms/{id}', [AgmController::class, 'update'])->name('agms.update');
         Route::delete('/agms/{id}', [AgmController::class, 'destroy'])->name('agms.destroy');
+
+        Route::get('/shareholders', [ShareholderController::class, 'index'])->name('shareholders.index');
+        Route::post('/shareholders', [ShareholderController::class, 'store'])->name('shareholders.store');
+        Route::get('/shareholders/{id}/edit', [ShareholderController::class, 'edit'])->name('shareholders.edit');
+        Route::put('/shareholders/{id}', [ShareholderController::class, 'update'])->name('shareholders.update');
+        Route::delete('/shareholders/{id}', [ShareholderController::class, 'destroy'])->name('shareholders.destroy');
     });
 });

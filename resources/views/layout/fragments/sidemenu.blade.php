@@ -19,7 +19,7 @@
         </li>
         <li>
             <a href="#companyMenu" data-bs-toggle="collapse" class="nav-link text-white d-flex align-items-center">
-                <span class="me-2 bi bi-building"></span> Company Management
+                <span class="me-2 bi bi-building"></span> Company Mgmt.
                 <span class="ms-auto bi bi-caret-down-fill"></span>
             </a>
             <ul class="collapse list-unstyled ps-3" id="companyMenu">

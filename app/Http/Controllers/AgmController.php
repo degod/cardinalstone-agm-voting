@@ -33,7 +33,6 @@ class AgmController extends Controller
             }
             return redirect()->back()->with('error', 'Database error occurred.');
         } catch (\Exception $e) {
-            dd($e->getMessage());
             $this->logService->error('Error creating AGM: ' . $e->getMessage(), ['exception' => $e]);
             return redirect()->route('agms.index')->with('error', $e->getMessage());
         }
@@ -65,7 +64,7 @@ class AgmController extends Controller
             $this->agmRepository->update($id, $data);
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->errorInfo[1] === 1062) {
-                return redirect()->back()->with('error', 'This AGM already exists for this house owner.');
+                return redirect()->back()->with('error', 'This AGM already exists for this company.');
             }
             return redirect()->back()->with('error', 'Database error occurred.');
         } catch (\Exception $e) {
