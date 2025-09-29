@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Agenda extends Model
 {
@@ -11,6 +12,7 @@ class Agenda extends Model
 
     protected $fillable = [
         'agm_id',
+        'agenda_uuid',
         'item_number',
         'title',
         'description',
@@ -18,6 +20,17 @@ class Agenda extends Model
         'voting_type',
         'is_active',
     ];
+    
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->agenda_uuid)) {
+                $model->agenda_uuid = (string) Str::uuid();
+            }
+        });
+    }
 
     /**
      * Relationships

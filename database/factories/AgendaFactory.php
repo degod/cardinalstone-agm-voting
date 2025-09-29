@@ -7,23 +7,25 @@ use App\Enums\VoteTypes;
 use App\Models\Agenda;
 use App\Models\Agm;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 class AgendaFactory extends Factory
 {
     protected $model = Agenda::class;
 
-    public function definition(): array
+  public function definition(): array
     {
         $itemTypes = array_keys(ItemTypes::asKeyValue());
         $votingTypes = array_keys(VoteTypes::asKeyValue());
+
         static $pairs = [];
 
         $initialArr = [
             'item_number' => $this->faker->numberBetween(1, 20),
             'description' => $this->faker->paragraph(),
-            'item_type' => $this->faker->randomElement($itemTypes),
+            'item_type'   => $this->faker->randomElement($itemTypes),
             'voting_type' => $this->faker->randomElement($votingTypes),
-            'is_active' => $this->faker->boolean(90),
+            'is_active'   => $this->faker->boolean(90),
         ];
 
         return array_merge($initialArr, $this->getValidPair($pairs));
@@ -31,17 +33,37 @@ class AgendaFactory extends Factory
 
     private function getValidPair(array &$pairs): array
     {
+        // Pick or create an AGM
+        $agm = Agm::inRandomOrder()->first() ?? Agm::factory()->create();
+
+        // Reuse an agenda_uuid for this AGM 50% of the time, otherwise make new
+        $existingForAgm = collect($pairs)
+            ->filter(fn ($p) => $p['agm_id'] === $agm->id)
+            ->pluck('agenda_uuid')
+            ->all();
+
+        if ($existingForAgm && $this->faker->boolean(50)) {
+            $agendaUuid = $this->faker->randomElement($existingForAgm);
+        } else {
+            $agendaUuid = (string) Str::uuid();
+        }
+
+        // Ensure unique title per (agm_id, agenda_uuid)
         do {
-            $agm = Agm::inRandomOrder()->first() ?? Agm::factory()->create();
-            $title = $this->faker->sentence(8);
+            $title = $this->faker->sentence(6);
+            $key = $agm->id . '-' . $agendaUuid . '-' . $title;
+        } while (in_array($key, array_column($pairs, 'key')));
 
-            $pair = $agm->id . '-' . $title;
-        } while (in_array($pair, $pairs));
+        $pairs[] = [
+            'key'         => $key,
+            'agm_id'      => $agm->id,
+            'agenda_uuid' => $agendaUuid,
+        ];
 
-        $pairs[] = $pair;
         return [
-            'agm_id' => $agm,
-            'title' => $title,
+            'agm_id'      => $agm->id,
+            'agenda_uuid' => $agendaUuid,
+            'title'       => $title,
         ];
     }
 }

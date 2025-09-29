@@ -10,6 +10,7 @@ use App\Http\Requests\AgendaStoreRequest;
 use App\Repositories\Agenda\AgendaRepositoryInterface;
 use App\Repositories\Agm\AgmRepositoryInterface;
 use App\Services\LogService;
+use Illuminate\Support\Str;
 
 class AgendaController extends Controller
 {
@@ -17,7 +18,7 @@ class AgendaController extends Controller
 
     public function index()
     {
-        $agendas = $this->agendaRepository->all(config('pagination.default.per_page'), []);
+        $agendas = $this->agendaRepository->allGrouped(config('pagination.default.per_page'), []);
         $agms = $this->agmRepository->all(null, []);
         $voteTypes = VoteTypes::asKeyValue();
         $itemStatuses = ItemStatuses::asKeyValue();
@@ -29,8 +30,16 @@ class AgendaController extends Controller
     public function store(AgendaStoreRequest $request)
     {
         $data = $request->validated();
+        $uuid = Str::uuid()->toString();
+        
         try {
-            $this->agendaRepository->create($data);
+            foreach($data['items'] as $item) {
+                $item['description'] = $data['description'] ?? null;
+                $item['agm_id'] = $data['agm_id'];
+                $item['agenda_uuid'] = ItemStatuses::ACTIVE;
+                $item['agenda_uuid'] = $uuid;
+                $this->agendaRepository->create($item);
+            }
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->errorInfo[1] === 1062) {
                 return redirect()->back()->with('error', 'This Agenda already exists.');
@@ -46,7 +55,7 @@ class AgendaController extends Controller
 
     public function edit(int $id)
     {
-        $agenda = $this->agendaRepository->find($id);
+        $agenda = $this->agendaRepository->findGrouped($id);
         if (!$agenda) {
             return redirect()->route('agendas.index')->with('error', 'Agenda not found.');
         }
@@ -63,10 +72,19 @@ class AgendaController extends Controller
         if (!$agenda) {
             return redirect()->route('agendas.index')->with('error', 'Agenda not found.');
         }
-
         $data = $request->validated();
-
+        
         try {
+            foreach($data['items'] as $item) {
+                if (isset($item['id'])) {
+                    $this->agendaRepository->update($item['id'], $item);
+                } else {
+                    $item['description'] = $data['description'] ?? null;
+                    $item['agm_id'] = $agenda->agm_id;
+                    $item['agenda_uuid'] = $agenda->agenda_uuid;
+                    $this->agendaRepository->create($item);
+                }
+            }
             $this->agendaRepository->update($id, $data);
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->errorInfo[1] === 1062) {
@@ -89,7 +107,7 @@ class AgendaController extends Controller
         }
 
         try {
-            $this->agendaRepository->delete($id);
+            $this->agendaRepository->delete($agenda->agenda_uuid);
         } catch (\Exception $e) {
             $this->logService->error('Error deleting Agenda: ' . $e->getMessage(), ['exception' => $e]);
             return redirect()->route('agendas.index')->with('error', $e->getMessage());
