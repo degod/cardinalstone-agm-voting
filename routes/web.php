@@ -7,6 +7,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ShareholderController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VoteController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -48,5 +49,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/agendas/{id}/edit', [AgendaController::class, 'edit'])->name('agendas.edit');
         Route::put('/agendas/{id}', [AgendaController::class, 'update'])->name('agendas.update');
         Route::delete('/agendas/{id}', [AgendaController::class, 'destroy'])->name('agendas.destroy');
+
+        Route::get('/votes', [VoteController::class, 'index'])->name('votes.index');
+        Route::post('/votes', [VoteController::class, 'store'])->name('votes.store');
+        Route::get('/votes/{id}/edit', [VoteController::class, 'edit'])->name('votes.edit');
+        Route::put('/votes/{id}', [VoteController::class, 'update'])->name('votes.update');
+        Route::delete('/votes/{id}', [VoteController::class, 'destroy'])->name('votes.destroy');
     });
 });

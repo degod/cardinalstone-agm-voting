@@ -6,7 +6,6 @@ class VoteTypes
 {
     const YES_NO = 'yes_no';
     const FOR_AGAINST_ABSTAIN = 'for_against_abstain';
-    const MULTIPLE_CHOICE = 'multiple_choice';
 
     public static function asKeyValue(): array
     {
