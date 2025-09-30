@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('agendas', function (Blueprint $table) {
             $table->id();
+            $table->uuid('agenda_uuid');
             $table->unsignedBigInteger('agm_id');
             $table->integer('item_number');
             $table->string('title', 120);
@@ -28,7 +29,7 @@ return new class extends Migration
                 ->onDelete('cascade');
 
             // Ensure agenda items are unique per AGM
-            $table->unique(['agm_id', 'title'], 'unique_item_title_per_agm');
+            $table->unique(['agm_id', 'title', 'agenda_uuid'], 'unique_item_title_per_agm_agenda');
         });
     }
 
