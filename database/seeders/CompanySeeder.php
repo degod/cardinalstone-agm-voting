@@ -21,6 +21,6 @@ class CompanySeeder extends Seeder
         }
 
         // Random extra companies
-        Company::factory(5)->create();
+        Company::factory(3)->create();
     }
 }

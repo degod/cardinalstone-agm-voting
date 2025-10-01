@@ -12,6 +12,6 @@ class AgmSeeder extends Seeder
      */
     public function run(): void
     {
-        Agm::factory(15)->create();
+        Agm::factory(5)->create();
     }
 }

@@ -13,6 +13,8 @@ use App\Repositories\Shareholder\ShareholderRepository;
 use App\Repositories\Shareholder\ShareholderRepositoryInterface;
 use App\Repositories\User\UserRepository;
 use App\Repositories\User\UserRepositoryInterface;
+use App\Repositories\Vote\VoteRepository;
+use App\Repositories\Vote\VoteRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
@@ -29,6 +31,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(AgmRepositoryInterface::class, AgmRepository::class);
         $this->app->bind(ShareholderRepositoryInterface::class, ShareholderRepository::class);
         $this->app->bind(AgendaRepositoryInterface::class, AgendaRepository::class);
+        $this->app->bind(VoteRepositoryInterface::class, VoteRepository::class);
     }
 
     /**

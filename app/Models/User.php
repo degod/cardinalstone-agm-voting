@@ -42,4 +42,27 @@ class User extends Authenticatable
     protected $casts = [
         'is_active' => 'boolean',
     ];
+
+    /**
+     * Relationships
+     */
+    public function shareholders()
+    {
+        return $this->hasMany(Shareholder::class);
+    }
+
+    public function companies()
+    {
+        return $this->belongsToMany(Company::class, Shareholder::class)
+            ->withPivot(['shares_owned', 'share_certificate_number', 'acquired_date', 'is_active'])
+            ->withTimestamps();
+    }
+
+    /**
+     * Get shares for a specific company
+     */
+    public function sharesForCompany(int $companyId): ?Shareholder
+    {
+        return $this->shareholders()->where('company_id', $companyId)->first();
+    }
 }

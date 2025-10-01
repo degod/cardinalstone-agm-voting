@@ -35,6 +35,7 @@
             <ul class="collapse list-unstyled ps-3" id="meetingMenu">
                 <li><a href="{{ route('agms.index') }}" class="nav-link">AGM</a></li>
                 <li><a href="{{ route('agendas.index') }}" class="nav-link">Agenda</a></li>
+                <li><a href="{{ route('votes.index') }}" class="nav-link">All Votes</a></li>
             </ul>
         </li>
         @endadmin

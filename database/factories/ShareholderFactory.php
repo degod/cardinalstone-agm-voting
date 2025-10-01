@@ -37,8 +37,8 @@ class ShareholderFactory extends Factory
 
         $pairs[] = $pair;
         return [
-            'company_id' => $company,
-            'user_id' => $user,
+            'company_id' => $company->id,
+            'user_id' => $user->id,
         ];
     }
 }

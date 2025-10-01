@@ -34,7 +34,7 @@ class UserSeeder extends Seeder
         $this->command->info('=================================');
 
         // Sample shareholders
-        User::factory(10)->create([
+        User::factory(5)->create([
             'role' => Roles::SHAREHOLDER,
         ]);
         $this->command->info('=================================');
