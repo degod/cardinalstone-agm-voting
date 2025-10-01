@@ -110,4 +110,10 @@ class VoteRepository implements VoteRepositoryInterface
 
         return $grouped;
     }
+
+    public function allUserVotes(int $userId): Collection
+    {
+        $users = $this->model->where('user_id', $userId)->orderBy('id', 'DESC');
+        return $users->get();
+    }
 }

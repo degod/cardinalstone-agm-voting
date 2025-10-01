@@ -53,7 +53,9 @@ Route::middleware('auth')->group(function () {
         Route::delete('/agendas/{id}', [AgendaController::class, 'destroy'])->name('agendas.destroy');
 
         Route::get('/votes', [VoteController::class, 'index'])->name('votes.index');
-        Route::post('/votes', [VoteController::class, 'store'])->name('votes.store');
         Route::delete('/votes/{id}', [VoteController::class, 'destroy'])->name('votes.destroy');
     });
+
+    Route::get('/vote', [VoteController::class, 'vote'])->name('vote');
+    Route::post('/votes', [VoteController::class, 'store'])->name('votes.store');
 });

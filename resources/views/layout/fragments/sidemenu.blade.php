@@ -7,9 +7,14 @@
                 <span class="me-2 bi bi-speedometer2"></span> Dashboard
             </a>
         </li>
+        <li>
+            <a href="{{ route('vote') }}" class="nav-link text-white d-flex align-items-center">
+                <span class="me-2 bi bi-check2-square"></span> Vote
+            </a>
+        </li>
         @admin
         <li>
-            <a href="#userMenu" data-bs-toggle="collapse" class="nav-link text-white d-flex align-items-center">
+            <a href=" #userMenu" data-bs-toggle="collapse" class="nav-link text-white d-flex align-items-center">
                 <span class="me-2 bi bi-people"></span>User Management
                 <span class="ms-auto bi bi-caret-down-fill"></span>
             </a>

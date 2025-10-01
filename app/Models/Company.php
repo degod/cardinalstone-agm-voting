@@ -18,4 +18,12 @@ class Company extends Model
         'name',
         'registration_number',
     ];
+
+    /**
+     * Relationships
+     */
+    public function agms()
+    {
+        return $this->hasMany(Agm::class);
+    }
 }

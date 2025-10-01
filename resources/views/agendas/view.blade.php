@@ -2,7 +2,7 @@
 @section('title', 'Agenda View')
 
 @section('body_content')
-<h3>Agenda View</h3>
+<h3>Agenda Item View</h3>
 <p>Viewing agenda item number {{ $agenda->item_number }}</p>
 
 <div class="row">

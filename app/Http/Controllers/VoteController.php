@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\VoteEditRequest;
+use App\Enums\VoteValues;
 use App\Http\Requests\VoteStoreRequest;
 use App\Repositories\Agenda\AgendaRepositoryInterface;
 use App\Repositories\Vote\VoteRepositoryInterface;
 use App\Services\LogService;
+use Illuminate\Support\Facades\Auth;
 
 class VoteController extends Controller
 {
@@ -19,23 +20,45 @@ class VoteController extends Controller
         return view('votes.index', compact('votes'));
     }
 
+    public function vote()
+    {
+        $user = Auth::user();
+        $agms = $user->companies->flatMap(function ($company) {
+            return $company->agms;
+        });
+        $voteTypes = VoteValues::asKeyValue();
+        $votes = $this->voteRepository->allUserVotes($user->id);
+
+        return view('votes.vote', compact('agms', 'voteTypes', 'user', 'votes'));
+    }
+
     public function store(VoteStoreRequest $request)
     {
         $data = $request->validated();
+        $user = $request->user();
+        $votesCast = $data['votes_cast'] ?? 1;
+        $voteValues = $data['vote_value'] ?? [];
 
         try {
-            $this->voteRepository->create($data);
+            foreach ($voteValues as $agendaId => $voteValue) {
+                $this->voteRepository->create([
+                    'user_id' => $user->id,
+                    'agenda_id' => $agendaId,
+                    'vote_value' => $voteValue,
+                    'votes_cast' => $votesCast,
+                ]);
+            }
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->errorInfo[1] === 1062) {
-                return redirect()->back()->with('error', 'This Agenda already exists.');
+                return redirect()->back()->with('error', 'You already voted for this agenda.');
             }
             return redirect()->back()->with('error', 'Database error occurred.');
         } catch (\Exception $e) {
-            $this->logService->error('Error creating Agenda: ' . $e->getMessage(), ['exception' => $e]);
+            $this->logService->error('Error creating Vote: ' . $e->getMessage(), ['exception' => $e]);
             return redirect()->route('agendas.index')->with('error', $e->getMessage());
         }
 
-        return redirect()->back()->with('success', 'Agenda created successfully.');
+        return redirect()->back()->with('success', 'Votes submitted successfully.');
     }
 
     public function destroy(int $id)

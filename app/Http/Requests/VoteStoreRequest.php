@@ -22,9 +22,8 @@ class VoteStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'agenda_id' => 'required|exists:agendas,id',
-            'user_id'   => 'required|exists:users,id',
-            'vote_value' => 'required|in:yes,no,for,against,abstain',
+            'vote_value' => 'required|array',
+            'vote_value.*' => 'required|in:yes,no,for,against,abstain',
             'votes_cast' => 'required|integer|min:1',
         ];
     }

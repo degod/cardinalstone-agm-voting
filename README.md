@@ -95,3 +95,13 @@ php artisan migrate:fresh --seed
 
 -   To access application's mailhost, visit
     `http://localhost:8025`
+
+-   To Login as "Super Admin":
+
+    -   `U:  admin@cardinalstone.test`
+    -   `P:  admin123`
+
+-   To Login as any Shareholder:
+
+    -   `U:  select from the list of users [under user management]`
+    -   `P:  password`

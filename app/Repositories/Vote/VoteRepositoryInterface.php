@@ -15,4 +15,5 @@ interface VoteRepositoryInterface
     public function delete(string $uuid): bool;
     public function all(?int $perPage): LengthAwarePaginator|Collection;
     public function allGrouped(?int $perPage): LengthAwarePaginator|Collection;
+    public function allUserVotes(int $userId): Collection;
 }
