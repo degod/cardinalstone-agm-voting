@@ -75,14 +75,13 @@ class VoteRepository implements VoteRepositoryInterface
 
     public function allGrouped(?int $perPage): LengthAwarePaginator|Collection
     {
-        $query = $this->model->orderBy('id', 'DESC');
-        $records = $perPage ? $query->paginate($perPage) : $query->get();
+        // Get all votes
+        $votes = $this->model->orderBy('agenda_id', 'DESC')->get();
 
-        $grouped = $records->groupBy(function ($item) {
-            return $item->agenda_id;
-        })->map(function ($group) {
+        // Group by agenda_id
+        $grouped = $votes->groupBy('agenda_id')->map(function ($group) {
             $first = $group->first();
-
+            if (!$first) return null;
             $attrs = [
                 'id'              => $first->id,
                 'agenda_id'       => $first->agenda_id,
@@ -92,19 +91,19 @@ class VoteRepository implements VoteRepositoryInterface
                     ->map(fn($votes) => $votes->sum('votes_cast'))
                     ->toArray(),
             ];
-
             $agenda = Vote::hydrate([$attrs])->first();
             $agenda->setRelation('items', $group->sortBy('voted_at')->values());
-
             return $agenda;
-        })->values();
+        })->filter()->values();
 
-        if ($records instanceof LengthAwarePaginator) {
+        if ($perPage) {
+            $page = LengthAwarePaginator::resolveCurrentPage();
+            $paged = $grouped->forPage($page, $perPage)->values();
             return new LengthAwarePaginator(
-                $grouped,
-                $records->total(),
-                $records->perPage(),
-                $records->currentPage(),
+                $paged,
+                $grouped->count(),
+                $perPage,
+                $page,
                 ['path' => request()->url(), 'query' => request()->query()]
             );
         }

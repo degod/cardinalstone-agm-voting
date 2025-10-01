@@ -38,49 +38,6 @@ class VoteController extends Controller
         return redirect()->back()->with('success', 'Agenda created successfully.');
     }
 
-    public function edit(int $id)
-    {
-        $agenda = $this->agendaRepository->findGrouped($id);
-        if (!$agenda) {
-            return redirect()->route('agendas.index')->with('error', 'Agenda not found.');
-        }
-
-        return view('agendas.edit', compact('agenda', 'voteTypes', 'itemStatuses', 'itemTypes'));
-    }
-
-    public function update(VoteEditRequest $request, int $id)
-    {
-        $agenda = $this->agendaRepository->find($id);
-        if (!$agenda) {
-            return redirect()->route('agendas.index')->with('error', 'Agenda not found.');
-        }
-        $data = $request->validated();
-
-        try {
-            foreach ($data['items'] as $item) {
-                if (isset($item['id'])) {
-                    $this->agendaRepository->update($item['id'], $item);
-                } else {
-                    $item['description'] = $data['description'] ?? null;
-                    $item['agm_id'] = $agenda->agm_id;
-                    $item['agenda_uuid'] = $agenda->agenda_uuid;
-                    $this->agendaRepository->create($item);
-                }
-            }
-            $this->agendaRepository->update($id, $data);
-        } catch (\Illuminate\Database\QueryException $e) {
-            if ($e->errorInfo[1] === 1062) {
-                return redirect()->back()->with('error', 'This Agenda already exists for this company.');
-            }
-            return redirect()->back()->with('error', 'Database error occurred.');
-        } catch (\Exception $e) {
-            $this->logService->error('Error updating Agenda: ' . $e->getMessage(), ['exception' => $e]);
-            return redirect()->route('agendas.index')->with('error', $e->getMessage());
-        }
-
-        return redirect()->route('agendas.index')->with('success', 'Agenda updated successfully.');
-    }
-
     public function destroy(int $id)
     {
         $agenda = $this->agendaRepository->find($id);

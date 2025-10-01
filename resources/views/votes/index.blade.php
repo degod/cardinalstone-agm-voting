@@ -9,7 +9,6 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>AGM</th>
                 <th>Agenda Item</th>
                 <th>Vote Casted</th>
                 <th>Vote Values</th>
@@ -20,8 +19,14 @@
         <tbody>
             @forelse($votes->items() as $vote)
             <tr>
-                <td>{{ $vote->agenda->agm->title }}</td>
-                <td>{{ $vote->agenda->title }}</td>
+                <td>
+                    <a href="{{ route('agendas.view', ['id'=>$vote->agenda_id]) }}">
+                        {{ $vote->agenda->title }}
+                    </a>
+                    <small style="white-space:nowrap;display:block">
+                        <b><i>{{ $vote->agenda->agm->title }}</i></b>
+                    </small>
+                </td>
                 <td>
                     {{ $vote->users_count }}<br>
                     <small style="white-space:nowrap">

@@ -75,15 +75,16 @@ class AgendaRepository implements AgendaRepositoryInterface
 
     public function allGrouped(?int $perPage): LengthAwarePaginator|Collection
     {
-        $query = $this->model->orderBy('id', 'DESC');
-        $records = $perPage ? $query->paginate($perPage) : $query->get();
-        $grouped = $records->groupBy(function ($item) {
+        $agendas = $this->model->orderBy('id', 'DESC')->get();
+
+        // Group by agenda_uuid and agm_id
+        $grouped = $agendas->groupBy(function ($item) {
             return $item->agenda_uuid . '-' . $item->agm_id;
         })->map(function ($group) {
             $first = $group->first();
-
             $attrs = [
                 'id'          => $first->id,
+                'item_number' => $first->item_number,
                 'agenda_uuid' => $first->agenda_uuid,
                 'agm_id'      => $first->agm_id,
                 'description' => $first->description,
@@ -91,16 +92,17 @@ class AgendaRepository implements AgendaRepositoryInterface
             ];
             $agenda = Agenda::hydrate([$attrs])->first();
             $agenda->setRelation('items', $group->sortBy('item_number')->values());
-
             return $agenda;
-        })->values();
+        })->filter()->values();
 
-        if ($records instanceof LengthAwarePaginator) {
+        if ($perPage) {
+            $page = LengthAwarePaginator::resolveCurrentPage();
+            $paged = $grouped->forPage($page, $perPage)->values();
             return new LengthAwarePaginator(
-                $grouped,
-                $records->total(),
-                $records->perPage(),
-                $records->currentPage(),
+                $paged,
+                $grouped->count(),
+                $perPage,
+                $page,
                 ['path' => request()->url(), 'query' => request()->query()]
             );
         }

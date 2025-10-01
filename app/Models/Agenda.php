@@ -20,7 +20,7 @@ class Agenda extends Model
         'voting_type',
         'is_active',
     ];
-    
+
     protected static function boot()
     {
         parent::boot();
@@ -38,5 +38,10 @@ class Agenda extends Model
     public function agm()
     {
         return $this->belongsTo(Agm::class);
+    }
+
+    public function votes()
+    {
+        return $this->hasMany(Vote::class);
     }
 }

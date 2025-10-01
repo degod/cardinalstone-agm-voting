@@ -31,4 +31,9 @@ class Agm extends Model
     {
         return $this->belongsTo(Company::class);
     }
+
+    public function agendas()
+    {
+        return $this->hasMany(Agenda::class);
+    }
 }

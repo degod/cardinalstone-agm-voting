@@ -27,13 +27,27 @@ class AgendaController extends Controller
         return view('agendas.index', compact('agendas', 'agms', 'itemTypes', 'itemStatuses', 'voteTypes'));
     }
 
+    public function view(int $id)
+    {
+        $agenda = $this->agendaRepository->find($id);
+        if (!$agenda) {
+            return redirect()->route('agendas.index')->with('error', 'Agenda not found.');
+        }
+        // dd($agenda->votes);
+        $voteTypes = VoteTypes::asKeyValue();
+        $itemStatuses = ItemStatuses::asKeyValue();
+        $itemTypes = ItemTypes::asKeyValue();
+
+        return view('agendas.view', compact('agenda', 'voteTypes', 'itemStatuses', 'itemTypes'));
+    }
+
     public function store(AgendaStoreRequest $request)
     {
         $data = $request->validated();
         $uuid = Str::uuid()->toString();
-        
+
         try {
-            foreach($data['items'] as $item) {
+            foreach ($data['items'] as $item) {
                 $item['description'] = $data['description'] ?? null;
                 $item['agm_id'] = $data['agm_id'];
                 $item['agenda_uuid'] = ItemStatuses::ACTIVE;
@@ -73,9 +87,9 @@ class AgendaController extends Controller
             return redirect()->route('agendas.index')->with('error', 'Agenda not found.');
         }
         $data = $request->validated();
-        
+
         try {
-            foreach($data['items'] as $item) {
+            foreach ($data['items'] as $item) {
                 if (isset($item['id'])) {
                     $this->agendaRepository->update($item['id'], $item);
                 } else {

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\AgmStatuses;
 use App\Enums\ItemTypes;
 use App\Enums\VoteTypes;
 use App\Models\Agenda;
@@ -13,7 +14,7 @@ class AgendaFactory extends Factory
 {
     protected $model = Agenda::class;
 
-  public function definition(): array
+    public function definition(): array
     {
         $itemTypes = array_keys(ItemTypes::asKeyValue());
         $votingTypes = array_keys(VoteTypes::asKeyValue());
@@ -33,12 +34,12 @@ class AgendaFactory extends Factory
 
     private function getValidPair(array &$pairs): array
     {
-        // Pick or create an AGM
-        $agm = Agm::inRandomOrder()->first() ?? Agm::factory()->create();
+        // Pick or create an AGM that is not closed or cancelled
+        $agm = Agm::whereNotIn('status', [AgmStatuses::CLOSED, AgmStatuses::CANCELLED])->inRandomOrder()->first() ?? Agm::factory()->create(['status' => 'open']);
 
         // Reuse an agenda_uuid for this AGM 50% of the time, otherwise make new
         $existingForAgm = collect($pairs)
-            ->filter(fn ($p) => $p['agm_id'] === $agm->id)
+            ->filter(fn($p) => $p['agm_id'] === $agm->id)
             ->pluck('agenda_uuid')
             ->all();
 

@@ -22,6 +22,17 @@ class AgmController extends Controller
         return view('agms.index', compact('agms', 'companies', 'agmStatuses'));
     }
 
+    public function view(int $id)
+    {
+        $agm = $this->agmRepository->find($id);
+        if (!$agm) {
+            return redirect()->route('agms.index')->with('error', 'AGM not found.');
+        }
+        $agmStatuses = AgmStatuses::asKeyValue();
+
+        return view('agms.view', compact('agm', 'agmStatuses'));
+    }
+
     public function store(AgmStoreRequest $request)
     {
         $data = $request->validated();

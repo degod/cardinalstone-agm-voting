@@ -69,7 +69,9 @@
         <tbody>
             @forelse($agendas->items() as $agenda)
             <tr>
-                <td>{{ $agenda->agm->title }}</td>
+                <td>
+                    {{ $agenda->agm->title }}
+                </td>
                 <td>{{ $agenda->description }}</td>
                 <td>{{ $itemStatuses[$agenda->is_active] }}</td>
                 <td>
@@ -96,9 +98,13 @@
                                     <hr>
                                     <h6>Agenda Items</h6>
                                     <ul class="list-group">
+                                        @php $countIndex = 0; @endphp
                                         @foreach($agenda->items as $item)
                                         <li class="list-group-item">
-                                            <b>{{ $item->item_number }}. {{ $item->title }}</b><br>
+                                            <a href="{{ route('agendas.view', $item->id) }}">
+                                                <b>{{ ++$countIndex }}. {{ $item->title }}</b><br>
+                                            </a>
+
                                             {{ $item->description }} <br>
                                             <small>
                                                 <b>Type:</b> {{ $item->item_type }} |
@@ -166,61 +172,61 @@
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const container = document.getElementById('agenda-items-container');
-    const template = document.getElementById('agenda-item-template').innerHTML;
-    const addBtn = document.getElementById('add-agenda-item');
+    document.addEventListener('DOMContentLoaded', function() {
+        const container = document.getElementById('agenda-items-container');
+        const template = document.getElementById('agenda-item-template').innerHTML;
+        const addBtn = document.getElementById('add-agenda-item');
 
-    let itemIndex = 0;
+        let itemIndex = 0;
 
-    function refreshIndexes() {
-        [...container.children].forEach((el, i) => {
-            el.querySelector('.item-number').value = i + 1;
-            el.querySelectorAll('input, select').forEach(input => {
-                input.name = input.name.replace(/\[\d+\]/, `[${i + 1}]`);
+        function refreshIndexes() {
+            [...container.children].forEach((el, i) => {
+                el.querySelector('.item-number').value = i + 1;
+                el.querySelectorAll('input, select').forEach(input => {
+                    input.name = input.name.replace(/\[\d+\]/, `[${i + 1}]`);
+                });
             });
-        });
-    }
+        }
 
-    addBtn.addEventListener('click', () => {
-        itemIndex++;
-        const html = template.replace(/__INDEX__/g, itemIndex);
-        const wrapper = document.createElement('div');
-        wrapper.innerHTML = html;
-        container.appendChild(wrapper.firstElementChild);
-        refreshIndexes();
-    });
-
-    container.addEventListener('click', (e) => {
-        if (e.target.classList.contains('remove-item')) {
-            e.target.closest('.agenda-item').remove();
+        addBtn.addEventListener('click', () => {
+            itemIndex++;
+            const html = template.replace(/__INDEX__/g, itemIndex);
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = html;
+            container.appendChild(wrapper.firstElementChild);
             refreshIndexes();
-        }
-    });
+        });
 
-    // Drag-and-drop reordering
-    let dragged;
-    container.addEventListener('dragstart', (e) => {
-        dragged = e.target;
-        e.target.style.opacity = 0.5;
+        container.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-item')) {
+                e.target.closest('.agenda-item').remove();
+                refreshIndexes();
+            }
+        });
+
+        // Drag-and-drop reordering
+        let dragged;
+        container.addEventListener('dragstart', (e) => {
+            dragged = e.target;
+            e.target.style.opacity = 0.5;
+        });
+        container.addEventListener('dragend', (e) => {
+            e.target.style.opacity = '';
+        });
+        container.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            const afterElement = [...container.children].find(child =>
+                e.clientY < child.getBoundingClientRect().top + child.offsetHeight / 2
+            );
+            if (afterElement) {
+                container.insertBefore(dragged, afterElement);
+            } else {
+                container.appendChild(dragged);
+            }
+        });
+        container.addEventListener('drop', () => {
+            refreshIndexes();
+        });
     });
-    container.addEventListener('dragend', (e) => {
-        e.target.style.opacity = '';
-    });
-    container.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        const afterElement = [...container.children].find(child =>
-            e.clientY < child.getBoundingClientRect().top + child.offsetHeight / 2
-        );
-        if (afterElement) {
-            container.insertBefore(dragged, afterElement);
-        } else {
-            container.appendChild(dragged);
-        }
-    });
-    container.addEventListener('drop', () => {
-        refreshIndexes();
-    });
-});
 </script>
 @endpush

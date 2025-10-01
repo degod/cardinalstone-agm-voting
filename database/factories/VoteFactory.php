@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Enums\ItemStatuses;
+use App\Enums\ShareholderStatuses;
 use App\Enums\VoteValues;
 use App\Models\Vote;
 use App\Models\Agenda;
@@ -15,11 +17,9 @@ class VoteFactory extends Factory
 
     public function definition(): array
     {
-        $voteValues = array_keys(VoteValues::asKeyValue());
         static $pairs = [];
 
         $initialArr = [
-            'vote_value' => $this->faker->randomElement($voteValues),
             'voted_at' => now(),
         ];
 
@@ -31,17 +31,23 @@ class VoteFactory extends Factory
         $maxAttempts = 10;
         $attempts = 0;
         do {
-            $agenda = Agenda::inRandomOrder()->first() ?? Agenda::factory()->create();
+            $agenda = Agenda::where('is_active', ItemStatuses::ACTIVE)->inRandomOrder()->first() ?? Agenda::factory()->create(['is_active' => true]);
             $companyId = $agenda->agm->company_id;
+
+            $voteValues = explode('_', $agenda->voting_type);
 
             // Find a user who is a shareholder of this company
             $shareholder = Shareholder::where('company_id', $companyId)
+                ->where('is_active', ShareholderStatuses::ACTIVE)
                 ->inRandomOrder()
                 ->first();
 
-            // If no shareholder exists, create one (and a user for it)
+            // If no active shareholder exists, create one (and a user for it)
             if (!$shareholder) {
-                $shareholder = Shareholder::factory()->create(['company_id' => $companyId]);
+                $shareholder = Shareholder::factory()->create([
+                    'company_id' => $companyId,
+                    'is_active' => ShareholderStatuses::ACTIVE
+                ]);
             }
 
             $user = $shareholder->user;
@@ -53,7 +59,18 @@ class VoteFactory extends Factory
         } while (in_array($key, array_column($pairs, 'key')) && $attempts < $maxAttempts);
 
         if ($attempts >= $maxAttempts) {
-            throw new \Exception('Could not find unique (agenda_id, user_id) pair after ' . $maxAttempts . ' attempts. Please ensure enough shareholders exist for each company.');
+            // Try to find another agenda and restart the process
+            $otherAgenda = Agenda::where('id', '!=', $agendaId)
+                ->where('is_active', ItemStatuses::ACTIVE)
+                ->inRandomOrder()
+                ->first();
+            if ($otherAgenda) {
+                // Recursively try with the new agenda
+                return $this->getValidPair($pairs);
+            } else {
+                // If no other agenda is found, fallback to previous behavior
+                throw new \Exception('Could not find unique (agenda_id, user_id) pair after ' . $maxAttempts . ' attempts and no alternative agenda found. Please ensure enough shareholders and agendas exist for each company.');
+            }
         }
 
         $pairs[] = [
@@ -66,6 +83,7 @@ class VoteFactory extends Factory
             'agenda_id' => $agendaId,
             'user_id' => $userId,
             'votes_cast' => $sharesOwned,
+            'vote_value' => $this->faker->randomElement($voteValues),
         ];
     }
 }

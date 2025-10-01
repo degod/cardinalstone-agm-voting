@@ -100,6 +100,7 @@
                 </td>
                 <td>{{ $agm->status }}</td>
                 <td>
+                    <a href="{{ route('agms.view', $agm->id) }}" class="btn btn-info btn-sm">View</a>
                     <a href="{{ route('agms.edit', $agm->id) }}" class="btn btn-primary btn-sm">Edit</a>
 
                     <form action="{{ route('agms.destroy', $agm->id) }}" method="POST" style="display:inline;">

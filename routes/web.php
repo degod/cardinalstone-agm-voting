@@ -34,6 +34,7 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/agms', [AgmController::class, 'index'])->name('agms.index');
         Route::post('/agms', [AgmController::class, 'store'])->name('agms.store');
+        Route::get('/agms/{id}', [AgmController::class, 'view'])->name('agms.view');
         Route::get('/agms/{id}/edit', [AgmController::class, 'edit'])->name('agms.edit');
         Route::put('/agms/{id}', [AgmController::class, 'update'])->name('agms.update');
         Route::delete('/agms/{id}', [AgmController::class, 'destroy'])->name('agms.destroy');
@@ -46,14 +47,13 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/agendas', [AgendaController::class, 'index'])->name('agendas.index');
         Route::post('/agendas', [AgendaController::class, 'store'])->name('agendas.store');
+        Route::get('/agendas/{id}', [AgendaController::class, 'view'])->name('agendas.view');
         Route::get('/agendas/{id}/edit', [AgendaController::class, 'edit'])->name('agendas.edit');
         Route::put('/agendas/{id}', [AgendaController::class, 'update'])->name('agendas.update');
         Route::delete('/agendas/{id}', [AgendaController::class, 'destroy'])->name('agendas.destroy');
 
         Route::get('/votes', [VoteController::class, 'index'])->name('votes.index');
         Route::post('/votes', [VoteController::class, 'store'])->name('votes.store');
-        Route::get('/votes/{id}/edit', [VoteController::class, 'edit'])->name('votes.edit');
-        Route::put('/votes/{id}', [VoteController::class, 'update'])->name('votes.update');
         Route::delete('/votes/{id}', [VoteController::class, 'destroy'])->name('votes.destroy');
     });
 });
