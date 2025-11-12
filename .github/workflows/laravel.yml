@@ -14,48 +14,57 @@ jobs:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Copy .env
+      # Ensure .env exists for artisan commands
+      - name: ⚙️ Prepare environment file
         run: cp .env.example .env
 
       - name: ⚡ Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: 🔧 Build and start Docker containers
+      - name: 🐳 Build and start Docker containers
         run: docker compose -f docker-compose.yml up -d --build
 
-      - name: ⏳ Wait for MySQL
+      - name: ⏳ Wait for MySQL to be ready
         run: |
-          echo "Waiting for MySQL to be ready..."
-          for i in {1..30}; do
-            docker compose run --rm app php -r "new PDO('mysql:host=mysql;dbname=cardinalstone_agm_voting','cardinalstone_user','cardinalstone_pass');" && break
-            echo "Waiting 2 seconds..."
-            sleep 2
+          echo "Waiting for MySQL service to accept connections..."
+          for i in {1..40}; do
+            if docker compose exec mysql mysqladmin ping -u cardinalstone_user -p'cardinalstone_pass' --silent &> /dev/null; then
+              echo "✅ MySQL is ready!"
+              break
+            fi
+            echo "⏳ Waiting 3 seconds for MySQL... ($i/40)"
+            sleep 3
           done
 
       - name: 🧑‍💻 Install Composer dependencies
-        run: docker compose run --rm app composer install --prefer-dist --no-interaction --no-progress
+        run: docker compose exec app composer install --prefer-dist --no-interaction --no-progress
 
-      - name: 🔑 Generate app key
-        run: docker compose run --rm app php artisan key:generate
+      - name: 🔑 Generate application key
+        run: docker compose exec app php artisan key:generate
 
       - name: 🗃️ Run migrations and seeders
-        run: docker compose run --rm -e DB_CONNECTION=mysql \
-                                  -e DB_HOST=mysql \
-                                  -e DB_PORT=3306 \
-                                  -e DB_DATABASE=cardinalstone_agm_voting \
-                                  -e DB_USERNAME=cardinalstone_user \
-                                  -e DB_PASSWORD=cardinalstone_pass \
-                                  app php artisan migrate:fresh --seed --force
+        run: |
+          docker compose exec -T app php artisan migrate:fresh --seed --force \
+            --env=testing
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: mysql
+          DB_PORT: 3306
+          DB_DATABASE: cardinalstone_agm_voting
+          DB_USERNAME: cardinalstone_user
+          DB_PASSWORD: cardinalstone_pass
 
-      - name: 🧪 Run tests
-        run: docker compose run --rm -e DB_CONNECTION=mysql \
-                                  -e DB_HOST=mysql \
-                                  -e DB_PORT=3306 \
-                                  -e DB_DATABASE=cardinalstone_agm_voting \
-                                  -e DB_USERNAME=cardinalstone_user \
-                                  -e DB_PASSWORD=cardinalstone_pass \
-                                  app php artisan test --no-interaction --stop-on-failure
+      - name: 🧪 Run test suite
+        run: |
+          docker compose exec -T app php artisan test --no-interaction --stop-on-failure
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: mysql
+          DB_PORT: 3306
+          DB_DATABASE: cardinalstone_agm_voting
+          DB_USERNAME: cardinalstone_user
+          DB_PASSWORD: cardinalstone_pass
 
-      - name: 🧹 Stop Docker containers
+      - name: 🧹 Tear down Docker containers
         if: always()
         run: docker compose down -v
