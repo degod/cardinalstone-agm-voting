@@ -31,13 +31,13 @@ jobs:
           done
 
       - name: 🧑‍💻 Run Composer install inside app container
-        run: docker exec cardinalstone-agm-voting-app composer install --prefer-dist --no-interaction --no-progress
+        run: docker compose exec cardinalstone-agm-voting-app composer install --prefer-dist --no-interaction --no-progress
 
       - name: 🔑 Generate app key
-        run: docker exec cardinalstone-agm-voting-app php artisan key:generate
+        run: docker compose exec cardinalstone-agm-voting-app php artisan key:generate
 
       - name: 🗃️ Run migrations and seeders
-        run: docker exec -e DB_CONNECTION=mysql \
+        run: docker compose exec -e DB_CONNECTION=mysql \
                       -e DB_HOST=mysql \
                       -e DB_PORT=3306 \
                       -e DB_DATABASE=cardinalstone_agm_voting \
@@ -46,7 +46,7 @@ jobs:
                       cardinalstone-agm-voting-app php artisan migrate:fresh --seed --force
 
       - name: 🧪 Run tests
-        run: docker exec -e DB_CONNECTION=mysql \
+        run: docker compose exec -e DB_CONNECTION=mysql \
                       -e DB_HOST=mysql \
                       -e DB_PORT=3306 \
                       -e DB_DATABASE=cardinalstone_agm_voting \
