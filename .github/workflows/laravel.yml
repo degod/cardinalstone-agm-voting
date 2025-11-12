@@ -1,0 +1,59 @@
+name: CAV Docker CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: ⚡ Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: 🔧 Build and start Docker containers
+        run: |
+          docker-compose -f docker-compose.yml up -d --build
+        # Wait for MySQL to be ready
+      - name: ⏳ Wait for MySQL
+        run: |
+          echo "Waiting for MySQL to be ready..."
+          for i in {1..30}; do
+            docker exec cardinalstone-agm-voting-mysql mysqladmin ping -h "127.0.0.1" --silent && break
+            echo "Waiting 2 seconds..."
+            sleep 2
+          done
+
+      - name: 🧑‍💻 Run Composer install inside app container
+        run: docker exec cardinalstone-agm-voting-app composer install --prefer-dist --no-interaction --no-progress
+
+      - name: 🔑 Generate app key
+        run: docker exec cardinalstone-agm-voting-app php artisan key:generate
+
+      - name: 🗃️ Run migrations and seeders
+        run: docker exec -e DB_CONNECTION=mysql \
+                      -e DB_HOST=mysql \
+                      -e DB_PORT=3306 \
+                      -e DB_DATABASE=cardinalstone_agm_voting \
+                      -e DB_USERNAME=cardinalstone_user \
+                      -e DB_PASSWORD=cardinalstone_pass \
+                      cardinalstone-agm-voting-app php artisan migrate:fresh --seed --force
+
+      - name: 🧪 Run tests
+        run: docker exec -e DB_CONNECTION=mysql \
+                      -e DB_HOST=mysql \
+                      -e DB_PORT=3306 \
+                      -e DB_DATABASE=cardinalstone_agm_voting \
+                      -e DB_USERNAME=cardinalstone_user \
+                      -e DB_PASSWORD=cardinalstone_pass \
+                      cardinalstone-agm-voting-app php artisan test --no-interaction --stop-on-failure
+
+      - name: 🧹 Stop Docker containers
+        if: always()
+        run: docker-compose down -v
