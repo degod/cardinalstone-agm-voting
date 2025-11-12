@@ -19,7 +19,7 @@ jobs:
 
       - name: 🔧 Build and start Docker containers
         run: |
-          docker-compose -f docker-compose.yml up -d --build
+          docker compose -f docker-compose.yml up -d --build
         # Wait for MySQL to be ready
       - name: ⏳ Wait for MySQL
         run: |
@@ -56,4 +56,4 @@ jobs:
 
       - name: 🧹 Stop Docker containers
         if: always()
-        run: docker-compose down -v
+        run: docker compose down -v
